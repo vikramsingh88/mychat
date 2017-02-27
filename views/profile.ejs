@@ -92,7 +92,7 @@
           <div id='f-name'></div>
           <div id='msg-area'>
             <div id="contentWrap" >
-                  <div id="chatWrap" style=" border-radius: 10px;">
+                  <div id="chatWrap" style=" border-radius: 10px;min-height: 400px;max-height: 400px;overflow-y: scroll;">
                       <div id="chat"></div>
                   </div>
                </div>
@@ -155,19 +155,24 @@
             e.preventDefault();
             socket.emit('send message',{msg:$messageBox.val(),buddy:buddy,chatname:chatname},function(data){
               $chat.append("<p align='right' class='error'>"+data+"&nbsp;&nbsp;</p><br/>");
+              scrollCorrect();
             });
             $messageBox.val('');
        });
 
        socket.on('whisper',function(data){
            $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>");
-
+           scrollCorrect();
        });
 
        socket.on('private',function(data){
            $chat.append("<p align='right' class='whisper'><b>"+data.chatname+": </b>"+data.msg+"&nbsp;&nbsp;</p><br/>");
-
+           scrollCorrect();
        });
+
+       function scrollCorrect(){
+             chatOuter.scrollTop(chatInner.outerHeight());
+      }
     });
 
   </script>
