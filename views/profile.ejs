@@ -106,7 +106,9 @@
         </div>
       </div>
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-2" id="count" style="width: 200px; height: 400px; overflow-y: scroll;">
+      
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
@@ -122,6 +124,9 @@
        var chatOuter=$('#chatWrap');
        var chatInner=$('#chat');
        var buddy = '';
+
+       var user_msg = {};
+       var msg = [];
 
        $('#message').keydown(function(event) {
           if (event.keyCode == 13) {
@@ -146,6 +151,12 @@
               { 
                 buddy = $(this).text();
                 $('#f-name').text(buddy);
+                var m = user_msg[buddy];
+                  for(i=0;i<m.length;i++){                    
+                      $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+buddy+" : </b>"+m[i]+"</p><br/>");
+                      console.log('Inside for loop');
+                      scrollCorrect();
+                  }
               });
         });
 
@@ -161,8 +172,17 @@
        });
 
        socket.on('whisper',function(data){
-           $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>");
+         msg.push(data.msg);
+        user_msg[data.chatname] = msg;
+        if (buddy===data.chatname) {
+          $("#count").empty();
+          $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>");          
+           console.log(user_msg);
+           console.log(data.chatname);
            scrollCorrect();
+        } else {
+            $("#count").append("<p><b>"+"Unread message from "+data.chatname+" </b>"+"</p><br/>");
+        }           
        });
 
        socket.on('private',function(data){
