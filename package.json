@@ -1,0 +1,22 @@
+{
+  "name": "mychat",
+  "version": "1.0.0",
+  "description": "demonstration of web socket",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "keywords": [
+    "websocket",
+    "socketio"
+  ],
+  "author": "Vikram",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "ejs": "^2.5.6",
+    "express": "^4.14.1",
+    "mongoose": "^4.8.4",
+    "socket.io": "^1.7.3"
+  }
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link data-require="bootstrap@4.0.5" data-semver="4.0.5" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
+  <script data-require="bootstrap@4.0.5" data-semver="4.0.5" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js"></script>
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+    
+    header h1 {
+      text-align: center;
+    }
+    
+    #profile-pic {
+      float: left;
+      margin-left: 30px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #bebebf;
+    }
+    
+    .f-list {
+      background: #bebebf;
+      height: 500px;
+      border: 1px solid #bebebf;
+      border-radius: 5px 0px 0px 5px;
+      padding: 0;
+      overflow: auto;
+    }
+    
+    .chatbox {
+      background: white;
+      border: 1px solid #bebebf;
+      border-radius: 0px 5px 5px 0px;
+      padding: 0;
+    }
+    
+    #dp {
+      width: 30px;
+      height: 30px;
+      background: #bebebf;
+      margin-right: 6px;
+      border-radius: 50%;
+    }
+    
+    .sendbar{
+      background: #ececec;
+      padding: 10px;
+      border-radius:0px 0px 5px 0px;
+    }
+    
+    .inputmsg{
+      min-width: 85%;
+      margin-right: 20px;
+    }
+    
+    #msg-area{
+      background: #f7f7f7;
+      height: 386px;
+    }
+    #f-name{
+      width: 100%;
+      height: 55px;
+      border-radius: 0px 5px 0px 0px;
+      text-align: center;
+      padding:15px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <br>
+    <div id='profile-pic'></div>
+    <h1><%= chatname %></h1>
+    <br>
+  </header>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">
+      <div class="row">
+        <div class="col-md-3 f-list" id="users">
+          
+        </div>
+        <div class="col-md-9 chatbox">
+          <div id='f-name'></div>
+          <div id='msg-area'>
+            <div id="contentWrap" >
+                  <div id="chatWrap" style=" border-radius: 10px;">
+                      <div id="chat"></div>
+                  </div>
+               </div>
+          </div>
+          <form id="message-box">
+            <div class="form-inline sendbar">
+              <input type="text" class='form-control inputmsg' id="message"/>
+              <button type="submit" class="btn btn-default">Send</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    jQuery(function($){
+      var socket=io.connect();
+      var $users=$('#users');
+       var $messageForm=$('#message-box');
+       var $messageBox=$('#message');
+       var $chat=$('#chat');
+
+       var chatOuter=$('#chatWrap');
+       var chatInner=$('#chat');
+       var buddy = '';
+
+       $('#message').keydown(function(event) {
+          if (event.keyCode == 13) {
+               $(this.form).submit()
+              return false;
+             }
+       });
+
+      var chatname = '<%= chatname %>';
+      socket.emit('new user',chatname, function(data) {
+                
+      });
+
+       socket.on('chatusers',function(data){
+            var html='<ul class="list-group">';
+            for(i=0;i<data.length;i++){
+              html+='<li class="list-group-item">'+data[i]+'</li>';
+            }
+            html=html+'</ul>';
+            $users.html(html);
+            $('ul.list-group li').click(function(e) 
+              { 
+                buddy = $(this).text();
+                $('#f-name').text(buddy);
+              });
+        });
+
+
+
+       $messageForm.submit(function(e){
+            e.preventDefault();
+            socket.emit('send message',{msg:$messageBox.val(),buddy:buddy,chatname:chatname},function(data){
+              $chat.append("<p align='right' class='error'>"+data+"&nbsp;&nbsp;</p><br/>");
+            });
+            $messageBox.val('');
+       });
+
+       socket.on('whisper',function(data){
+           $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>");
+
+       });
+
+       socket.on('private',function(data){
+           $chat.append("<p align='right' class='whisper'><b>"+data.chatname+": </b>"+data.msg+"&nbsp;&nbsp;</p><br/>");
+
+       });
+    });
+
+  </script>
+
+</body>
+
+</html>
