@@ -152,11 +152,16 @@
                 buddy = $(this).text();
                 $('#f-name').text(buddy);
                 var m = user_msg[buddy];
-                  for(i=0;i<m.length;i++){                    
+                console.log("m :",m);
+                  if(m != null){  
+                    for(i = 0;i<m.length;i++) {                  
                       $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+buddy+" : </b>"+m[i]+"</p><br/>");
                       console.log('Inside for loop');
                       scrollCorrect();
-                  }
+                    } 
+                  }                 
+                  delete user_msg[buddy];
+                  console.log("in list loop :",user_msg);
               });
         });
 
@@ -172,17 +177,19 @@
        });
 
        socket.on('whisper',function(data){
-         msg.push(data.msg);
-        user_msg[data.chatname] = msg;
+         if(!(data.chatname in user_msg)){
+            user_msg[data.chatname] = [data.msg];
+          } else{
+            user_msg[data.chatname].push(data.msg);
+          }
         if (buddy===data.chatname) {
           $("#count").empty();
-          $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>");          
-           console.log(user_msg);
-           console.log(data.chatname);
+          $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>"); 
            scrollCorrect();
         } else {
             $("#count").append("<p><b>"+"Unread message from "+data.chatname+" </b>"+"</p><br/>");
-        }           
+        }  
+        console.log("on receive : ",user_msg);    
        });
 
        socket.on('private',function(data){
