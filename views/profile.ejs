@@ -4,8 +4,13 @@
 <head>
   <link data-require="bootstrap@4.0.5" data-semver="4.0.5" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
   <script data-require="bootstrap@4.0.5" data-semver="4.0.5" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js"></script>
+<link rel="stylesheet" type="text/css" href="css/jquery.emojipicker.css">
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery.emojipicker.js"></script>
+
+  <!-- Emoji Data -->
+  <link rel="stylesheet" type="text/css" href="css/jquery.emojipicker.tw.css">
+  <script type="text/javascript" src="js/jquery.emojis.js"></script>
   <style>
     body {
       padding-top: 10px;
@@ -58,7 +63,6 @@
     
     .f-list {
       background: #bebebf;
-      height: 500px;
       border: 1px solid #bebebf;
       border-radius: 5px 0px 0px 5px;
       padding: 0;
@@ -148,7 +152,7 @@
     </div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  
   <script src="/socket.io/socket.io.js"></script>
   <script>
     jQuery(function($){
@@ -165,7 +169,7 @@
        var user_msg = {};
        var user_msg_map = [];
        var conversation_id;
-
+       $('#message').emojiPicker();
        $('#message').keydown(function(event) {
           if (event.keyCode == 13) {
                $(this.form).submit()
