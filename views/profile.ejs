@@ -60,8 +60,8 @@
     #profile-pic {
       float: left;
       margin-left: 30px;
-      width: 70px;
-      height: 70px;
+      width: 90px;
+      height: 90px;
       border-radius: 50%;
       background: #bebebf;
     }
@@ -121,14 +121,13 @@
 <body>
   <header>
     <br>
-    <div id='profile-pic'></div>
+    <div id='profile-pic' style="background-image: url(/images/avatar.jpg);"></div>
     <h1><%= chatname %></h1>
     <br>
   </header>
   <div class="row">    
-    <div class="col-md-11">
-      <div class="row">
-        <div class="col-md-1"></div>
+    <div class="col-md-12">
+      <div class="row">        
         <div class="col-md-2 f-list" id="user_list_div">
           <ul id="users" class="list-group"></ul>
         </div>
