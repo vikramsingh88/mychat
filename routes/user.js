@@ -44,7 +44,7 @@ var authenticate = function(req, res) {
 	User.findOne({chatname: chatName}, function(err, user) {
 		console.log('Fetched user : '+user)
 		if (user == null) {
-			var message="Invalid email or password";
+			var message="Invalid chatname or password";
         	res.render("login", {errorMessage:message});
         	return;
 		}
@@ -52,7 +52,7 @@ var authenticate = function(req, res) {
 		if (user.password == password) {
 			res.render("profile",{chatname:user.chatname});
 		} else {
-			var message="Invalid email or password";
+			var message="Invalid chatname or password";
          	res.render("login",{errorMessage:message});
          	return;
 		}

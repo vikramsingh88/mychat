@@ -24,8 +24,13 @@
 
     ul li {
         color: limegreen;
-               list-style-type: disc;
+        list-style-type: disc;
         margin-left: 0em;
+      }
+
+      .unread{
+        background: red;
+        list-style-type: disc;
       }
 
 
@@ -125,8 +130,8 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
       <div class="row">
-        <div class="col-md-3 f-list" id="users">
-          
+        <div class="col-md-3 f-list" id="user_list_div">
+          <ul id="users" class="list-group"></ul>
         </div>
         <div class="col-md-9 chatbox">
           <div id='f-name'></div>
@@ -182,17 +187,31 @@
                 
       });
 
+      //create user list dynamically and add element id
+      var addBuddyToList= function(buddy) {
+          var ul = document.getElementById("users");
+          var li = document.createElement("li");
+          li.setAttribute("id", buddy);
+          li.setAttribute("class", "list-group-item");
+
+          li.appendChild(document.createTextNode(buddy));
+          ul.appendChild(li)
+      }
+
        socket.on('chatusers',function(data){
-            var html='<ul class="list-group">';
+            $('ul li').remove();
+            //var html='<ul class="list-group">';
             for(i=0;i<data.length;i++){
-              html+='<li class="list-group-item">'+data[i]+'</li>';
+              addBuddyToList(data[i]);
             }
-            html=html+'</ul>';
-            $users.html(html);
+            //html=html+'</ul>';
+            //$users.html(html);
             $('ul.list-group li').click(function(e) 
               { 
                 buddy = $(this).text();
                 $("#chat").empty();
+                var thirdItem = document.getElementById(buddy);
+                thirdItem.setAttribute("class", "list-group-item");
                 /*var flag = false
                 //conversation_id = chatname+"_"+buddy;
                 for(i = 0 ; i < user_msg_map.length; i++){
@@ -367,12 +386,14 @@
             user_msg[data.chatname].push(data.msg);
           }
         if (buddy===data.chatname) {
-          $("#count").empty();
+          //$("#count").empty();
           $chat.append("<p align='left' class='whisper'><b>&nbsp;&nbsp;&nbsp;"+data.chatname+" : </b>"+data.msg+"</p><br/>"); 
           $("#typing").text("");
            scrollCorrect();
         } else {
-            $("#count").append("<p><b>"+"Unread message from "+data.chatname+" </b>"+"</p><br/>");
+            //$("#count").append("<p><b>"+"Unread message from "+data.chatname+" </b>"+"</p><br/>");
+             var thirdItem = document.getElementById(data.chatname);
+             thirdItem.setAttribute("class", "list-group-item unread");
         }  
         console.log("on receive : ",user_msg);    
        });
