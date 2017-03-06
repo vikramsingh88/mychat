@@ -10,6 +10,7 @@
 
   <!-- Emoji Data -->
   <link rel="stylesheet" type="text/css" href="css/jquery.emojipicker.tw.css">
+  <link rel="stylesheet" type="text/css" href="css/search.css">
   <script type="text/javascript" src="js/jquery.emojis.js"></script>
   <style>
     body {
@@ -27,7 +28,6 @@
         list-style-type: disc;
         margin-left: 0em;
       }
-      ul#users li.active a { color: #f4ba51 ; }
 
       .unread{
         background: #ff9999;
@@ -119,23 +119,34 @@
 </head>
 
 <body>
-  <header>
-    <br>
-    <div id='profile-pic' style="background-image: url(/images/avatar.jpg);"></div>
-    <h1><%= chatname %></h1>
-    <br>
+<div class="container-fluid">
+  <header> 
+  <div class="row">
+    <div class="col-md-2">
+      <div id='profile-pic' style="background-image: url(/images/avatar.jpg);"></div>
+    </div>
+    <div class="col-md-7" style="padding-top: 25px;">
+      <h1><%= chatname %></h1>
+    </div>
+    <div class="col-md-3">
+      <div class="input-group" style="padding-top: 25px;">
+        <input id="search" type="text" class="form-control" placeholder="Search for buddy...">        
+      </div>
+    </div>
+  </div> 
   </header>
+
   <div class="row">    
     <div class="col-md-12">
       <div class="row">        
         <div class="col-md-2 f-list" id="user_list_div">
           <ul id="users" class="list-group"></ul>
         </div>
-        <div class="col-md-9 chatbox">
+        <div class="col-md-10 chatbox">
           <div id='f-name' style="background: #e6ccff"></div>
           <div id='msg-area'>
             <div id="contentWrap" >
-                  <div id="chatWrap" style=" border-radius: 10px;min-height: 400px;max-height: 400px;overflow-y: scroll;">
+                  <div id="chatWrap" style=" border-radius: 10px;min-height: 500px;max-height: 500px;overflow-y: scroll;">
                       <div id="chat"></div>
                   </div>
                </div>
@@ -153,6 +164,7 @@
     <!--<div class="col-md-2" id="count" style="width: 200px; height: 400px; overflow-y: scroll;">
       
     </div>-->
+  </div>
   </div>
 
   

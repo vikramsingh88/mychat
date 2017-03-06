@@ -208,9 +208,10 @@
 
       // Step 3
       var diffOffset = {
-        top: (elOffset.top - parentOffset.top),
+        top: (400),
         left: (elOffset.left - parentOffset.top)
       };
+      //elOffset.top - parentOffset.top
 
       this.$picker.css({
         top: diffOffset.top,
