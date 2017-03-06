@@ -27,9 +27,10 @@
         list-style-type: disc;
         margin-left: 0em;
       }
+      ul#users li.active a { color: #f4ba51 ; }
 
       .unread{
-        background: red;
+        background: #ff9999;
         list-style-type: disc;
       }
 
@@ -143,7 +144,7 @@
           <form id="message-box">
             <div class="form-inline sendbar">
               <p align="center" class='typing' id="typing"> </p><br/>
-              <input type="text" class='form-control inputmsg' id="message"/>
+              <input type="text" class='form-control inputmsg' id="message" placeholder="type your message" />
               <button type="submit" class="btn btn-default">Send</button>
             </div>
           </form>
@@ -172,7 +173,11 @@
        var user_msg = {};
        var user_msg_map = [];
        var conversation_id;
-       $('#message').emojiPicker();
+       $('#message').emojiPicker({
+          width: '300px',
+          height: '200px'
+        });
+
        $('#message').keydown(function(event) {
           if (event.keyCode == 13) {
                $(this.form).submit()
@@ -310,6 +315,10 @@
 
        $messageForm.submit(function(e){
             e.preventDefault();
+            if ($("#message").val() == '') {
+              alert('no message');
+              return;
+            }
             var flag = false    
             var tempChatId1 = chatname+"_"+buddy; 
             var tempChatId2 = buddy+"_"+chatname; 
