@@ -47,8 +47,14 @@ var chatServer = function(httpServer) {
 			user_msg_map.push(temp);
 			console.log('msg '+temp);
              if(chatname in users){
-                users[buddy].emit('whisper',{msg:msg,chatname:socket.chatname,conversation_id:conversation_id});
-                socket.emit('private',{msg:msg,chatname:chatname,conversation_id:conversation_id});
+             	console.log('After closeing tab',users[buddy])
+             	if(typeof users[buddy] != 'undefined'){
+             		console.log('After closeing tab',"Inside block");
+                	users[buddy].emit('whisper',{msg:msg,chatname:socket.chatname,conversation_id:conversation_id});
+                	socket.emit('private',{msg:msg,chatname:chatname,conversation_id:conversation_id});
+            	} else {
+            		callback("Sorry, "+buddy+" is not online");
+            	}
             }else{
               callback("Sorry, "+chatname+" is not online");
             }
