@@ -21,17 +21,17 @@ var registerme = function(req, res) {
 		if(err) {
 			console.log("User already exists with that chatname or email");
 			var message="A user already exists with that username or email";
-         	res.render("register",{errorMessage:message});
+         	res.render("signin",{errorMessage:message});
          	return;
 		} else {
 			var message="User register successfully";
-         	res.render("login",{successMessage:message});
+         	res.render("signin",{successMessage:message});
 		}
 	});
 }
 
 var loginForm = function(req, res) {
-	res.render('login');
+	res.render('signin');
 }
 
 var authenticate = function(req, res) {
@@ -45,15 +45,16 @@ var authenticate = function(req, res) {
 		console.log('Fetched user : '+user)
 		if (user == null) {
 			var message="Invalid chatname or password";
-        	res.render("login", {errorMessage:message});
+        	res.render("signin", {errorMessage:message});
         	return;
 		}
 
 		if (user.password == password) {
+			console.log("Authenticated successfully ",user.chatname);
 			res.render("profile",{chatname:user.chatname});
 		} else {
 			var message="Invalid chatname or password";
-         	res.render("login",{errorMessage:message});
+         	res.render("signin",{errorMessage:message});
          	return;
 		}
 	});

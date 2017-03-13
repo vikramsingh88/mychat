@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>    
+    <link data-require="bootstrap@4.0.5" data-semver="4.0.5" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/signin.css">
+    <script data-require="bootstrap@4.0.5" data-semver="4.0.5" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="js/signin.js"></script>
+  </head>
+
+  <body>
+    <div class="login-page">
+      <div class="form">
+        <label>
+            <% if( typeof(errorMessage) !== 'undefined' ) {%>
+              <h5 align="center" class="margin-base-vertical"><code><%=errorMessage%></code></h5>
+            <%}%>
+        </label>
+        <form class="register-form" method="post" action="/registerme">
+          <input type="text" placeholder="chatname" name="chatname"/>
+          <input type="password" placeholder="password" name="password1"/>
+          <input type="text" placeholder="email address" name="email"/>
+          <button>create</button>
+          <p class="message">Already registered? <a href="#">Sign In</a></p>
+        </form>
+        <form class="login-form" method="post" action="/authenticate">
+          <input type="text" placeholder="chatname" name="chatname"/>
+          <input type="password" placeholder="password" name="password"/>
+          <button>login</button>
+          <p class="message">Not registered? <a href="#">Create an account</a></p>
+        </form>
+      </div>
+  </div>
+  </body>
+</html>

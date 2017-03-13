@@ -1,4 +1,8 @@
 var socketio = require('socket.io');
+var mongoose = require('mongoose');
+var db = require('../models/db.js');
+var User = mongoose.model('User');
+var Buddy = mongoose.model('Buddy');
 
 var users = {};
 var user_msg_map = [];
@@ -9,6 +13,7 @@ var chatServer = function(httpServer) {
 	io.sockets.on('connection', function(socket) {
 	
 		function updateChatUsers() {
+			console.log('update chat users ',Object.keys(users));
 			io.sockets.emit('chatusers', Object.keys(users));
 		}
 
@@ -16,7 +21,48 @@ var chatServer = function(httpServer) {
 			callback(true);
 	        socket.chatname=chatname;
 	        users[socket.chatname]=socket;
+	        //update login user presence status
+	        updateUserStatusInDB(chatname, true);
 	        updateChatUsers();
+		});
+
+		//update login user online status in mongodb
+		var updateUserStatusInDB = function(chatname, status){
+			User.update({ chatname: chatname }, { $set: { onlineStatus: status }}, function(err, user){
+				console.log('Updated user ',user);
+			});
+		};
+
+		//Get buddy presence status
+		function getBuddyPresenceStatus(buddy, cb){
+			User.findOne({'chatname':buddy}, function(err, user) {
+				if(!err){
+					cb(user.onlineStatus);
+				} else {
+					cb(false);
+				}
+				
+			});
+		}
+		socket.on('get Buddy Presence Status', function(buddy, cb){
+			console.log("get Buddy Presence Status buddy ",buddy);
+			getBuddyPresenceStatus(buddy, function(status){
+				cb(buddy, status);
+			});
+		});
+
+		//Fetch buddy list of logged in user
+		socket.on('fetch buddies', function(loginUser, cb) {
+			console.log("login User ",loginUser);
+			Buddy.findOne({'userName':loginUser}, function(err, buddies) {
+				if(!err && buddies != null){
+					cb(buddies.buddies);
+					console.log("Fetch buddies ",buddies.buddies);
+				} else {
+					console.log("Fetch buddies error ",err);
+				}
+				
+			});
 		});
 
 		//event for typing indicatio
@@ -75,8 +121,93 @@ var chatServer = function(httpServer) {
 		socket.on('disconnect', function(data) {
 			if (!socket.chatname) return;
 			delete users[socket.chatname];
-			updateChatUsers();
+			//updateChatUsers();
+			io.sockets.emit('buudy status offline', socket.chatname);
+			updateUserStatusInDB(socket.chatname, false);
 		});
+
+		//search buddies
+		socket.on('search buddy', function(searchKey, cb) {
+			User.find({'chatname':{ "$regex": searchKey, "$options": "i" }},function(err, data){
+				var searchResult = [];
+				for(i=0;i<data.length;i++){
+					searchResult[i] = data[i].chatname;
+				}
+				cb(searchResult);
+			});
+		});
+
+		//adding contact to buddy list of use
+		socket.on('add to buddy', function(user, contact, cb) {
+			Buddy.findOne({'userName':user},function(err, data){
+				if(!err) {
+					console.log("Data ",data);	
+					if (data == null) {
+						var newBuddy = new Buddy();
+						newBuddy.userName = user;
+						newBuddy.buddies.push(contact);
+						newBuddy.save(function(err, savedBuddy){
+							if(err) {
+								console.log("Error in adding contact to buddy list");					
+					         	return;
+							} else {
+								console.log("Successfully added contact to buddy list",savedBuddy);
+								cb(contact);
+								addBuddyToViceVersa(contact,user);
+							}
+						});
+					} else {						
+						//data.buddies.push(contact);
+						Buddy.update({_id: data.id}, {$addToSet: {buddies: contact}}, function(err, savedBuddy) {
+							if(err) {
+								console.log("Error in adding contact to buddy list");					
+					         	return;
+							} else {
+								console.log("Successfully added contact to buddy list",savedBuddy);
+								cb(contact);
+								addBuddyToViceVersa(contact,user);
+							}
+						});
+					}
+				}
+			});
+		});
+
+		//If A is friend of B then B will be friend of A
+		var addBuddyToViceVersa = function(user, contact) {
+			Buddy.findOne({'userName':user},function(err, data){
+				if(!err) {
+					console.log("Data ",data);	
+					if (data == null) {
+						var newBuddy = new Buddy();
+						newBuddy.userName = user;
+						newBuddy.buddies.push(contact);
+						newBuddy.save(function(err, savedBuddy){
+							if(err) {
+								console.log("Error in adding contact to buddy list");					
+					         	return;
+							} else {
+								console.log("Successfully added contact to buddy list",savedBuddy);
+								//send event to add buddy other side
+								users[user].emit("new buddy available", user);
+							}
+						});
+					} else {						
+						//data.buddies.push(contact);
+						Buddy.update({_id: data.id}, {$addToSet: {buddies: contact}}, function(err, savedBuddy) {
+							if(err) {
+								console.log("Error in adding contact to buddy list");					
+					         	return;
+							} else {
+								console.log("Successfully added contact to buddy list",savedBuddy);
+								//send event to add buddy other side
+								users[user].emit("new buddy available", user);
+							}
+						});
+					}
+				}
+			});
+		}
 	});
 
 	return io;

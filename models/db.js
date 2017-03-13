@@ -19,8 +19,17 @@ mongoose.connection.on('disconnected', function() {
 var userSchema = new mongoose.Schema({
 		chatname: {type: String, unique:true},
 		email: {type: String,unique:true},
-		password: String
+		password: String,
+		onlineStatus:Boolean
+});
+
+var buddySchema = new mongoose.Schema({
+	userName:{type:String,unique:true},
+	buddies:[String]
 });
 
 // Build the User model
 mongoose.model('User', userSchema);
+
+//build the buddy model
+mongoose.model('Buddy', buddySchema);
